@@ -12,8 +12,10 @@ workflows:
     jobs:
     - lint
     - test
-    - integration
     - build
+    - integration:
+        requires:
+        - build
     - deploy:
         requires:
         - build
@@ -66,9 +68,19 @@ jobs:
     working_directory: /go/src/github.com/cortexproject/cortex
     steps:
     - checkout
+    - setup_remote_docker
+    - install-docker
+    - restore_cache:
+        key: v1-cortex-{{ .Branch }}-{{ .Revision }}
     - run:
-        name: Integration Test
+        name: Load Images
+        command: make BUILD_IN_CONTAINER=false load-images
+    - run:
+        name: DB Migrations Integration Test
         command: MIGRATIONS_DIR=$(pwd)/pkg/configs/db/migrations make BUILD_IN_CONTAINER=false configs-integration-test
+    - run:
+        name: Ingester hand-over test
+        command: ./integration-tests/test-handover.sh
 
   build:
     <<: *defaults
