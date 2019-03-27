@@ -522,7 +522,7 @@ func (a dynamoDBStorageClient) getDynamoDBChunks(ctx context.Context, chunks []c
 		chunksByKey[key] = chunk
 		tableName, err := a.schemaCfg.ChunkTableFor(chunk.From)
 		if err != nil {
-			return nil, err
+			return nil, log.Error(err)
 		}
 		outstanding.Add(tableName, key, placeholder)
 	}
@@ -623,7 +623,7 @@ func processChunkResponse(response *dynamodb.BatchGetItemOutput, chunksByKey map
 			}
 
 			if err := chunk.Decode(decodeContext, buf.B); err != nil {
-				return nil, err
+				return nil, fmt.Errorf("error when decoding chunk: %s", err)
 			}
 
 			result = append(result, chunk)
