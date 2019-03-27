@@ -269,7 +269,7 @@ func (c *Chunk) Decode(decodeContext *DecodeContext, input []byte) error {
 			return err
 		}
 		c.encoded = input
-		return c.Data.UnmarshalFromBuf(input)
+		return errors.Wrap(c.Data.UnmarshalFromBuf(input), "when unmarshalling legacy chunk")
 	}
 
 	// First, calculate the checksum of the chunk and confirm it matches
