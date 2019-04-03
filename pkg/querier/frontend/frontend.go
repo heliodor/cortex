@@ -316,6 +316,9 @@ func (f *Frontend) Process(server Frontend_ProcessServer) error {
 		}
 
 		originalCtx := request.originalCtx
+		if request.request != nil && request.request.QueryRangeRequest != nil {
+			request.request.QueryRangeRequest.logToSpan(request.originalCtx)
+		}
 
 		select {
 		case sendChan <- request.request:

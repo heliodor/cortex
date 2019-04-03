@@ -85,6 +85,7 @@ func (q queryRangeRoundTripper) RoundTrip(r *http.Request) (*http.Response, erro
 	if err != nil {
 		return nil, err
 	}
+	request.logToSpan(r.Context())
 
 	response, err := q.queryRangeMiddleware.Do(r.Context(), request)
 	if err != nil {
